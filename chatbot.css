@@ -1,0 +1,40 @@
+html{
+    height:50%;
+}
+body{
+    background:black;
+    border: 1px dashed white;
+    margin-top: 5%;
+    margin-left: 5%;
+    margin-bottom: 45%;
+    margin-right: 5%;
+    
+    transform: translate(-20%,-20%,-20%,-20%);
+   
+}
+h1{
+    color:aliceblue;
+    text-align: center;
+    text-decoration: solid;
+    text-shadow: -2px;
+    text-decoration: underline;
+    overflow: hidden;
+}
+button{
+    background-color: aqua;
+    width: 90%;
+    height:10%;
+   margin-top:10% ;
+    margin-left: 10%;
+    margin-right: 15%;
+    padding : 10px;
+    border-radius: 10px;
+    border:3px solid white;
+}
+#output{
+    color:white;
+    margin-left:10%;
+    margin-top: 10%;
+    text-size-adjust: 64px;
+}
+

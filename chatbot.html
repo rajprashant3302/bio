@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="chatbot.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Assistant Chatbot</title>
+    <style>
+        video, canvas {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <button id="startBtn">Start Speaking</button>
+    <p id="output">Output will appear here...</p>
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240"></canvas>
+
+    <script>
+        
+        function speak(text) {
+            const speech = new SpeechSynthesisUtterance();
+            speech.text = text;
+            speech.volume = 10;
+            speech.rate = 2;
+            speech.pitch = 5;
+            window.speechSynthesis.speak(speech);
+        }
+       
+
+        
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+
+       
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+                video.srcObject = stream;
+            });
+        }
+
+        
+        function takeSelfie() {
+            context.drawImage(video, 0, 0, 320, 240);
+            speak("Here is your selfie.");
+        }
+
+        
+        function chatbotResponse(text) {
+            text = text.toLowerCase();
+
+            
+            if (text.includes("open youtube")) {
+                window.open("https://www.youtube.com", "_blank");
+                return "Opening YouTube.";
+            } else if (text.includes("open facebook")) {
+                window.open("https://www.facebook.com", "_blank");
+                return "Opening Facebook.";
+            } else if (text.includes("Hi")) {
+           return "Hi,Welcome to Prashant's voice assistant";
+            } else if (text.includes("open instagram")) {
+                window.open("https://www.instagram.com", "_blank");
+                return "Opening Instagram.";
+            } else if (text.includes("open gmail")) {
+                window.open("https://mail.google.com", "_blank");
+                return "Opening Gmail.";
+            } else if (text.includes("open linkedin")) {
+                window.open("https://www.linkedin.com", "_blank");
+                return "Opening LinkedIn.";
+            } else if (text.includes("open chrome")) {
+                window.open("chrome://newtab", "_blank");
+                return "Opening a new Chrome tab.";
+
+           
+            } else if (text.includes("play video on youtube")) {
+                window.open("https://youtu.be/d0x2UbhbdmY?feature=shared", "_blank"); // Rickroll example
+                return "Playing a video on YouTube.";
+
+            // Increase volume (for web video/audio elements)
+            } else if (text.includes("increase volume")) {
+                let videoElement = document.querySelector("video, audio");
+                if (videoElement && videoElement.volume < 1) {
+                    videoElement.volume += 0.1;
+                    return "Increasing volume.";
+                } else {
+                    return "Cannot increase volume any further.";
+                }
+
+            // Take a selfie
+            } else if (text.includes("click my selfie")) {
+                takeSelfie();
+                return "Taking a selfie.";
+            
+            } else {
+                return "I'm not sure how to answer that.";
+            }
+        }
+
+        // Speech Recognition (for voice input)
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const startBtn = document.getElementById('startBtn');
+        const output = document.getElementById('output');
+
+        startBtn.addEventListener('click', () => {
+            recognition.start();
+            output.textContent = 'Listening...';
+        });
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            output.textContent = `You said: ${speechResult}`;
+
+            // Get chatbot's response
+            const response = chatbotResponse(speechResult);
+            speak(response); // Speak the response
+            output.textContent += `\nBot: ${response}`;
+        };
+
+        recognition.onspeechend = () => {
+            recognition.stop();
+        };
+
+        recognition.onerror = (event) => {
+            output.textContent = 'Error occurred in recognition: ' + event.error;
+        };
+    </script>
+</body>
+</html>
