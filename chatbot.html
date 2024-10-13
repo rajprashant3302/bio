@@ -13,7 +13,7 @@
     </style>
 </head>
 <body>
-    <h1>Chatbot</h1>
+    <h1> Prashant's Chatbot</h1>
     <button id="startBtn">Start Speaking</button>
     <p id="output">Output will appear here...</p>
     <video id="video" width="320" height="240" autoplay></video>
@@ -25,8 +25,8 @@
             const speech = new SpeechSynthesisUtterance();
             speech.text = text;
             speech.volume = 10;
-            speech.rate = 2;
-            speech.pitch = 5;
+            speech.rate = 1;
+            speech.pitch = 1;
             window.speechSynthesis.speak(speech);
         }
        
