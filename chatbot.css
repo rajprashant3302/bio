@@ -12,7 +12,7 @@ body{
     transform: translate(-20%,-20%,-20%,-20%);
    
 }
-h1{
+h1,h3{
     color:aliceblue;
     text-align: center;
     text-decoration: solid;
