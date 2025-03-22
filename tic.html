@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        .board { display: grid; grid-template-columns: repeat(3, 100px); grid-gap: 5px; justify-content: center; }
+        .cell { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 2em; border: 2px solid black; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <h2 id="status"></h2>
+    <button onclick="resetGame()">Restart</button>
+
+    <script>
+        let board = [['', '', ''], ['', '', ''], ['', '', '']];
+        let human = 'X', ai = 'O';
+        let gameOver = false;
+
+        function printBoard() {
+            const boardDiv = document.getElementById('board');
+            boardDiv.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.innerText = board[i][j];
+                    cell.onclick = () => playerMove(i, j);
+                    boardDiv.appendChild(cell);
+                }
+            }
+        }
+
+        function isMovesLeft() {
+            return board.flat().includes('');
+        }
+
+        function evaluate() {
+            for (let row of board) {
+                if (row[0] && row[0] === row[1] && row[1] === row[2]) return row[0] === ai ? 10 : -10;
+            }
+            for (let i = 0; i < 3; i++) {
+                if (board[0][i] && board[0][i] === board[1][i] && board[1][i] === board[2][i]) return board[0][i] === ai ? 10 : -10;
+            }
+            if (board[0][0] && board[0][0] === board[1][1] && board[1][1] === board[2][2]) return board[0][0] === ai ? 10 : -10;
+            if (board[0][2] && board[0][2] === board[1][1] && board[1][1] === board[2][0]) return board[0][2] === ai ? 10 : -10;
+            return 0;
+        }
+
+        function minimax(depth, isMax) {
+            let score = evaluate();
+            if (score !== 0) return score;
+            if (!isMovesLeft()) return 0;
+
+            let best = isMax ? -Infinity : Infinity;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (!board[i][j]) {
+                        board[i][j] = isMax ? ai : human;
+                        let val = minimax(depth + 1, !isMax);
+                        best = isMax ? Math.max(best, val) : Math.min(best, val);
+                        board[i][j] = '';
+                    }
+                }
+            }
+            return best;
+        }
+
+        function bestMove() {
+            let bestVal = -Infinity, row = -1, col = -1;
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    if (!board[i][j]) {
+                        board[i][j] = ai;
+                        let moveVal = minimax(0, false);
+                        board[i][j] = '';
+                        if (moveVal > bestVal) {
+                            row = i;
+                            col = j;
+                            bestVal = moveVal;
+                        }
+                    }
+                }
+            }
+            board[row][col] = ai;
+            printBoard();
+            checkGameOver();
+        }
+
+        function playerMove(i, j) {
+            if (board[i][j] || gameOver) return;
+            board[i][j] = human;
+            printBoard();
+            checkGameOver();
+            if (!gameOver) bestMove();
+        }
+
+        function checkGameOver() {
+            let score = evaluate();
+            if (score === 10) { document.getElementById('status').innerText = "Computer Wins!"; gameOver = true; }
+            else if (score === -10) { document.getElementById('status').innerText = "You Win!"; gameOver = true; }
+            else if (!isMovesLeft()) { document.getElementById('status').innerText = "It's a Draw!"; gameOver = true; }
+        }
+
+        function resetGame() {
+            board = [['', '', ''], ['', '', ''], ['', '', '']];
+            gameOver = false;
+            document.getElementById('status').innerText = '';
+            printBoard();
+        }
+
+        printBoard();
+    </script>
+</body>
+</html>
