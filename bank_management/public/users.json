@@ -1,0 +1,32 @@
+{
+  "aman": {
+    "name": "Aman",
+    "dob": "2025-03-12",
+    "aadhaar": "231561555",
+    "phone": "51676894",
+    "email": "sjijaiswal4@gmail.com",
+    "address": "bihar",
+    "password": "1234567890",
+    "accountNumber": "168185584449267",
+    "cardNumber": "9747234067123740",
+    "balance": 0,
+    "transactions": []
+  },
+  "FORTUNE": {
+    "name": "saubhagya ji jaiswal",
+    "dob": "2007-02-09",
+    "aadhaar": "1234",
+    "phone": "9235711751",
+    "email": "sjijaiswal4@gmail.com",
+    "address": "cvr A 207",
+    "password": "SAU456GYA",
+    "accountNumber": "837393100138163",
+    "cardNumber": "5779577840154615",
+    "balance": 601,
+    "transactions": [
+      "24/3/2025, 10:57:17 pm - Deposited ₹1000",
+      "24/3/2025, 10:57:51 pm - Withdrew ₹50",
+      "24/3/2025, 10:58:58 pm - Paid ₹349 for internet bill #1234"
+    ]
+  }
+}

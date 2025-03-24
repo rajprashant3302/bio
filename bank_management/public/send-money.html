@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Money - Infinity Bank</title>
+    <link rel="stylesheet" href="styles_sendMoney.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- <img src="logo.jpg" alt="Bank Logo" class="logo"> -->
+            <h1>Infinity Bank</h1>
+            <h1>Send Money</h1>
+            <p>Transfer funds to any account quickly and securely.</p>
+        </div>
+
+        <div class="content">
+            <form id="send-money-form">
+                <label for="account-number">Recipient's Account Number:</label>
+                <input type="text" id="account-number" name="account-number" placeholder="Enter account number" required>
+
+                <label for="amount">Amount (₹):</label>
+                <input type="number" id="amount" name="amount" placeholder="Enter amount" required>
+
+                <button type="submit">Send Money</button>
+            </form>
+
+            <!-- Success message will appear after submission -->
+            <div id="success-message" class="success-message" style="display: none;">
+                <p><i class="fas fa-check-circle"></i> Transaction Successful! ₹<span id="amount-sent"></span> has been sent to <span id="recipient-name"></span>.</p>
+                <a href="code6.html" class="back-to-dashboard">Go back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>IP Address 123.45.78.45 | 07:14 PM</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('send-money-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            var accountNumber = document.getElementById('account-number').value;
+            var amount = document.getElementById('amount').value;
+
+            if (accountNumber && amount) {
+                // Hide form and show success message
+                document.getElementById('send-money-form').style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+                document.getElementById('amount-sent').innerText = amount;
+                document.getElementById('recipient-name').innerText = accountNumber;
+            }
+        });
+    </script>
+</body>
+</html>
