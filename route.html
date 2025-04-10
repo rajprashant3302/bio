@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How YouTube Routing Works (DNS + BST + Traceroute)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #0d47a1;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        section {
+            padding: 2rem;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #0d47a1;
+            margin-top: 2rem;
+        }
+
+        code {
+            background: #eee;
+            padding: 4px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .diagram {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .diagram img {
+            max-width: 100%;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 6px solid #0d47a1;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        img {
+            height: 400px;
+        }
+
+        .animate {
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>How Your YouTube Request Works — Step by Step</h1>
+        <p>DNS Resolution, IP Routing, and Router Table Logic (BST + Trie)</p>
+    </header>
+
+    <section class="animate">
+        <h2>🧠 What is a Router Table?</h2>
+        <div class="card">
+            A router table stores routing information such as:
+            <ul>
+                <li>Destination IP or IP prefix</li>
+                <li>Next hop (where to send the packet)</li>
+                <li>Interface (which port to use)</li>
+                <li>Metric (cost of the route)</li>
+            </ul>
+        </div>
+
+        <h2>🌲 Router Table as a BST (Binary Search Tree)</h2>
+        <div class="card">
+            <p>Routers may store their routing table as a BST to enable fast lookup:</p>
+            <ul>
+                <li>Left node: smaller IP prefix</li>
+                <li>Right node: greater IP prefix</li>
+            </ul>
+            <p>It uses <strong>Longest Prefix Matching</strong> to find the best route.</p>
+        </div>
+
+        <h2>🌳 Prefix Tree / Radix Tree</h2>
+        <div class="card">
+            <p>Routers also use:</p>
+            <ul>
+                <li><strong>Prefix Tree (Trie):</strong> Each bit of the IP address decides the path (0 → left, 1 →
+                    right).</li>
+                <li><strong>Radix Tree:</strong> Compressed Trie for better space and speed. Common prefixes are merged.
+                </li>
+            </ul>
+        </div>
+
+        <h2>📦 From IITP to YouTube: The Journey of Your Packet</h2>
+        <div class="card">
+            <strong>Scenario:</strong> You're in IITP hostel and open <code>youtube.com</code> from your laptop
+            (10.0.0.45).
+        </div>
+
+        <h3>✅ Step 1: DNS Lookup</h3>
+        <div class="card">
+            <ul>
+                <li>Laptop doesn't know YouTube's IP.</li>
+                <li>Your laptop checks its local cache.(if you have visite recently, it mignt already know - no DNS
+                    query needed.</li>
+
+                <li>If not Found,it queries:<br>Asks IITP's DNS server (or public DNS like 8.8.8.8).</li>
+                <li>DNS replies with: <code>youtube.com → 142.250.183.206</code></li>
+                <li>Our Browser then uses that IP to send actual HTTP requests.</li>
+            </ul>
+
+            <h3>1. Why doesn't your laptop know YouTube’s IP address?</h3>
+            Because of how the Internet works — we use domain names (like youtube.com) instead of IPs
+            (142.250.183.206) since they’re easier to remember.
+            <br>Your laptop doesn't know YouTube’s IP right away because:<br>
+
+            1. DNS: The Internet’s Phonebook:
+            When you type youtube.com, your system doesn’t have its IP address hardcoded.<br>
+
+            So your laptop asks:
+            👉 “Hey DNS, what’s the IP of youtube.com?”.
+
+            This is exactly like asking a phonebook for someone’s number when you only know their name.
+
+            <h3> 2. Why Not Store All IPs Locally?</h3>
+            The internet has billions of websites.
+
+            Storing all their IPs on your device would be impossible and constantly outdated (IP addresses can
+            change!).
+
+            Instead, we use Domain Name System (DNS) — a distributed system designed to resolve domain names to IPs
+            in real-time.<br>
+
+            <h3>3. WHY does your laptop send a request to YouTube’s IP?</h3>
+            Because computers don't understand names like youtube.com — they only talk using IP addresses.
+
+            So even though you type youtube.com, your laptop must know the IP address to actually contact the YouTube
+            servers.
+
+            That’s where DNS (Domain Name System) comes in. It translates:
+
+            scss
+            Copy
+            Edit
+            youtube.com → <code>142.250.183.206</code> (or similar)
+            <br>
+
+            <h3>5.HOW does your laptop send the request to YouTube’s IP?</h3>
+            Here’s the step-by-step flow in real language:<br>
+
+            <h4>STEP 1: You type youtube.com in Chrome</h4>
+            Chrome tells your OS (Windows/Linux/macOS):
+            👉 "Hey, what’s the IP of youtube.com?"
+
+            <h4>STEP 2: DNS Resolution (via phonebook system)</h4>
+            Your laptop does one of the following:
+
+            Checks its local DNS cache (fast) or
+
+            Asks the IITP DNS server or a public one like 8.8.8.8<br>
+
+            That DNS server replies with:
+
+            youtube.com → <code>142.250.183.206</code>
+            <h4>STEP 3: IP is returned → Now packet is ready!</h4>
+            Now your laptop knows the destination IP. It creates a packet like this:<br>
+            <code>
+Source IP: 10.0.0.45  (your laptop)<br>
+Destination IP: 142.250.183.206 (YouTube)<br>
+Data: HTTP GET request for homepage<br>
+</code>
+            <h4>STEP 4: Routing kicks in</h4>
+            Your laptop checks:
+
+            “Is YouTube on my local network?” → ❌ Nope.
+
+            “Send it to my default gateway” (probably the hostel router)<br>
+
+            From there, the packet travels through:
+
+            Hostel Router → IITP Main Router → BSNL Gateway → Google Data Center
+            Each router checks its routing table (maybe stored like a BST), finds the next best hop, and sends the
+            packet forward.
+
+
+            </p>
+        </div>
+        </div>
+
+        <h3>✅ Step 2: Send Request to YouTube</h3>
+        <div class="card">
+            <ul>
+                <li>Laptop creates a packet:</li>
+                <li>Source: 10.0.0.45</li>
+                <li>Destination: 142.250.183.206</li>
+                <li>Sends it to the <strong>default gateway</strong> (Hostel Router)</li>
+            </ul>
+            <p>This is when it checks:<br>
+            <ul>
+                <li> “Can I send directly to 142.250.183.206?” → No, it's not local.</li>
+
+                <li>“Send to my default gateway (IITP hostel router)”</li>
+
+                <li>That router sends it up the chain (IITP Core → BSNL → Google)</li>
+            </ul>
+            </p>
+        </div>
+
+        <h3>✅ Step 3: Hostel Router Checks Routing Table</h3>
+        <div class="card">
+            <p>It uses BST or Prefix Match logic:</p>
+            <pre>
+          192.168.0.0/16
+         /              \
+    10.0.0.0/8       0.0.0.0/0 → IITP Core Router
+      </pre>
+            <p>No match → uses <code>0.0.0.0/0</code> → sends to IITP core router</p>
+        </div>
+
+        <h3>✅ Step 4: IITP Core Router → BSNL Uplink</h3>
+        <div class="card">
+            <p>Routing table:</p>
+            <pre>
+142.250.0.0/16 → BSNL
+0.0.0.0/0 → BSNL (fallback)
+      </pre>
+            <p>Packet forwarded to BSNL</p>
+        </div>
+
+        <h3>✅ Step 5: BSNL → Google</h3>
+        <div class="card">
+            <p>Packet travels through BSNL’s routers → global internet → reaches Google’s data center</p>
+        </div>
+
+        <h3>🔁 Return Journey</h3>
+        <div class="card">
+            Google → BSNL → IITP Core Router → Hostel Router → Laptop (10.0.0.45)
+        </div>
+
+        <div class="diagram">
+            <img src="ChatGPT Image Apr 11, 2025, 01_07_20 AM.png" alt="Network Path Diagram">
+            <p><em>Example visual of the packet journey (illustrative)</em></p>
+        </div>
+
+        <h2>🤔 Why Doesn’t Your Laptop Know YouTube’s IP?</h2>
+        <div class="card">
+            <ul>
+                <li>The internet uses domain names, not IPs, for humans.</li>
+                <li>DNS translates <code>youtube.com → IP address</code></li>
+                <li>Your device can't store IPs of all sites — that's why it queries DNS servers</li>
+            </ul>
+        </div>
+
+        <h2>🔍 DNS is NOT the Actual YouTube Request</h2>
+        <div class="card">
+            <p>First: DNS only resolves the IP address</p>
+            <p>Then: HTTP packet is actually sent to YouTube using that IP</p>
+            <p><strong>Analogy:</strong> Ask a friend for Pizza Hut’s number → Then you call Pizza Hut</p>
+        </div>
+
+        <h2>🧪 Try It Yourself</h2>
+        <div class="card">
+            <p>Run this to see packet hops:</p>
+            <pre>
+tracert youtube.com    # Windows
+traceroute youtube.com # Linux/macOS
+      </pre>
+        </div>
+    </section>
+</body>
+
+</html>
